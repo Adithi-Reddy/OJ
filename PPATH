@@ -1,0 +1,98 @@
+import java.util.*;
+import java.lang.*;
+
+class Main
+{
+	int start;
+	
+	public static void main (String[] args) throws java.lang.Exception
+	{
+		
+		Scanner sc = new Scanner(System.in);
+		int T = sc.nextInt();
+		int Answer =Integer.MAX_VALUE;
+		boolean[] sieve=sieve();
+		for (int t = 0; t < T; t++) {
+			//System.out.println("T="+t);
+			int start = sc.nextInt();
+			int end = sc.nextInt();
+			/*
+			 * base case 
+			 */
+			if(start==end) {
+				Answer =0;
+				System.out.println(0);
+			continue;
+			}
+			int[] st = toArr(start);
+			/*
+			 * bfs
+			 */
+			boolean[] visited = new boolean[10001];
+			int[] level = new int[10001];
+			Arrays.fill(level, Integer.MAX_VALUE);
+			LinkedList<Integer> queue = new LinkedList<Integer>();
+			queue.add(start);
+			visited[start] = true;
+			level[start]=0;
+			//int level =0;int count =0;
+			while(!queue.isEmpty()){
+				int temp = queue.poll();
+			for (int i = 0;  i < 4; i++) {
+				int[] tem = toArr(temp);
+				for (int j = 0; j < 10; j++) {
+					if((j==0&&i==0)) continue;
+					int x = toNum(tem, i, j);					
+					if(!visited[x]){
+						visited[x]=true;
+						if(!sieve[x]){
+							queue.add(x);
+							level[x]=Math.min(level[temp]+1, level[x]);
+							//System.out.println("adding "+x+" at level "+level[x]);
+						}
+					}
+				}
+				
+			}
+			}
+			System.out.println(level[end]);
+		}
+	}
+	private static int[] toArr(int start) {
+		//System.out.println(" start: "+start);
+		int[] st = new int[4];
+		//int[] en = new int[4];
+		for(int i=0;i<4;i++){
+			st[i]=(start%10);
+			start/=10;
+		}
+		return st;
+	}
+	public static boolean[] sieve(){
+		boolean[] sieve = new boolean[10001];
+		for (int i = 2; i < 10000; i++) {
+			for (int j = 2; !sieve[i] && i*j <10000 ; j++) {
+					if(!sieve[i*j]){
+					sieve[i*j] = true;
+					}
+				}
+			}
+			
+		/*for (int i =2 ; i < sieve.length-1; i++) {
+			if(!sieve[i])
+			System.out.print(i+":");
+		}*/
+		return sieve;
+		
+	}
+	public static int toNum(int[] start,int pos,int val){
+		start[3-pos]=val;
+		int temp=start[3];
+		for (int i = 2; i >= 0; i--) {
+			temp*=10;
+			temp+=start[i];
+		}
+		//System.out.println(temp);
+		return temp;
+	}
+}
