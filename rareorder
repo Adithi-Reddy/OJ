@@ -1,0 +1,129 @@
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Scanner;
+import java.util.Stack;
+
+
+public class CharGraph {
+int V;
+List<Integer> adj[];
+char nodes[] = new char[26];
+int count =0;
+int[] map;
+public CharGraph( int v) {
+	V=v;
+	adj = new List[v];
+	map = new int[26];
+	Arrays.fill(map, -1);
+	for (int i = 0; i <v; i++) {
+		adj[i] = new LinkedList<Integer>();
+	}
+}
+public void print(){
+	Iterator it;
+	for (int i = 0; i < V; i++) {
+		System.out.println(i);
+		it=adj[i].iterator();
+		while (it.hasNext()) {
+			System.out.print(it.next());
+			
+		}
+		System.out.println();
+	}
+}
+public void addEdge(char a, char b){
+	if(map[a-'A']==-1){
+		map[a-'A']=count;
+		nodes[count]=a;
+		count++;
+	}
+	if(map[b-'A']==-1){
+		map[b-'A']=count;
+		nodes[count]=b;
+		count++;
+	}
+	adj[map[a-'A']].add(map[b-'A']);
+	//System.out.println(a+" --> "+b);
+}
+public void TopoUtil(int i, boolean[] visited,Stack stack){
+
+	visited[i]=true;
+	Iterator<Integer> it = adj[i].iterator();
+	int j;
+	//System.out.println(i);
+	while(it.hasNext()){
+		j=it.next();
+		if(!visited[j]){
+			//System.out.println("toputil j"+j);
+			TopoUtil(j, visited, stack);
+		}
+	}
+	//System.out.println("push j"+i);
+	stack.push(i);
+	
+}
+public void TopoSort(){
+	boolean[] visited = new boolean[V];
+	Stack stack = new Stack();
+	for(int i = 0 ; i<V;i++){
+		if(!visited[i]){
+			//System.out.println(i);
+			TopoUtil(i, visited, stack);}
+		
+	}
+	for (int i = 0; !stack.isEmpty(); i++) {
+		System.out.print(nodes[(Integer) stack.pop()]);
+		//System.out.print( stack.pop());
+	}
+	System.out.println();
+}
+public static void main(String args[]){
+	Scanner sc = new Scanner(System.in);
+	String prev,next;
+	boolean[] charPresent = new boolean[26];
+	List<String> str = new LinkedList<String>();
+	String c;
+	int m,n,count=0,total=0;
+	while(sc.hasNext()){
+		count++;
+		str.add(sc.next());
+		c=str.get(count-1);
+		if(c.charAt(0)=='#') break;
+		n=c.length();
+		for(int i=0;i<n ;i++){
+			if(!charPresent[c.charAt(i)-'A']){
+				total++;
+				charPresent[c.charAt(i)-'A']=true;
+			}
+		}
+	}
+
+	CharGraph g = new CharGraph(total);
+	next=str.get(0);
+	int j=0;
+	count=count-2;
+	while(count>j){
+		j++;
+		prev=next;
+		m=prev.length();
+		next=str.get(j);;
+		n=prev.length();
+		n=m<n?m:n;
+		//System.out.println(m+"  "+n);
+		for(int i=0;i<n;i++){
+			//System.out.println(prev.charAt(i)+"  "+next.charAt(i));
+			if(prev.charAt(i)!=next.charAt(i)){
+				g.addEdge(prev.charAt(i), next.charAt(i));
+				break;
+			}
+		}
+		
+	}
+	//g.print();
+	 System.out.println("Following is a Topological " +
+             "sort of the given graph");
+g.TopoSort();
+}
+}
